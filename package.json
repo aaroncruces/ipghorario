@@ -1,0 +1,22 @@
+{
+    "name": "ipghorarios",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "devDependencies": {
+        "@types/node": "^20.2.3",
+        "nodemon": "^2.0.22",
+        "ts-node": "^10.9.1",
+        "tslib": "^2.5.2",
+        "typescript": "^5.0.4"
+    },
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "devel": "nodemon -q --watch 'src/**' --ext 'ts,json' --ignore 'src/**/*.spec.ts' --exec 'ts-node src/index.ts'"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "xlsx": "https://cdn.sheetjs.com/xlsx-0.19.3/xlsx-0.19.3.tgz"
+    }
+}
