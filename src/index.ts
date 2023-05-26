@@ -1,7 +1,7 @@
 import { WorkBook, readFile, utils } from "xlsx"
 import { Profesor } from "./types/Profesor"
 import { formatName } from "./utils/string_utils"
-import { stripRutSpecialCharacters } from "./utils/rut_utils"
+import { extractNumericPart_rutWithDV, stripRutSpecialCharacters } from "./utils/rut_utils"
 console.log("..........................................")
 const main = () => {
     const workbookIPG = readFile("xlsx_samples/IPG_Datos.xlsx")
@@ -31,14 +31,7 @@ const processProfesoresFromSheet = (unprocessedProfesorList: Array<any>): Array<
 
 const processProfesorFromSheet = (unprocessedProfesor: any): Profesor | undefined => {
     //Rut must be a string on xlsx sheet
-    let newRut: string | number = unprocessedProfesor["Rut"]
-    if (!newRut || newRut == "")
-        return undefined
-    //TODO: REGEX RUT
-    //TODO: GET NUMERICPART WITH REGEX
-    //TODO: FORMAT RUT ON XLSX WRITING
-    newRut = stripRutSpecialCharacters(newRut.toString())
-
+    const newRut = extractNumericPart_rutWithDV(unprocessedProfesor["Rut"])
 
     //Nombre must be a string on xlsx sheet
     let newNombre: string = unprocessedProfesor["Nombre"]
@@ -48,17 +41,17 @@ const processProfesorFromSheet = (unprocessedProfesor: any): Profesor | undefine
     newNombre = formatName(newNombre)
 
     //Telefono shoud be a number on xlsx sheet
-    let newTelefono: string | number = unprocessedProfesor["Telefono"]
+    let newTelefono: string | number = unprocessedProfesor["Telefono"] || 0
     //TODO: CONVERT TO NUMBER
 
     //Must be String
-    let newCorreoIpg: string = unprocessedProfesor["Correo IPG"]
+    let newCorreoIpg: string = unprocessedProfesor["Correo IPG"] || ""
 
     //Must be String
-    let newCorreoPersonal: string = unprocessedProfesor["Correo Personal"]
+    let newCorreoPersonal: string = unprocessedProfesor["Correo Personal"] || ""
 
-    //
-    let newComentario: string = unprocessedProfesor["Comentarios"]
+    //TODO: light formatting
+    let newComentario: string = unprocessedProfesor["Comentarios"] || ""
 
 
     const newProfesor: Profesor = {

@@ -8,7 +8,12 @@
  */
 export const stripRutSpecialCharacters: (formattedRut: string) => string =
     (formattedRut: string) => formattedRut.replace(/[^0-9kK]/g, "").replace(/[k]/g, "K");
-
+/**
+    * Takes a rut in any format (with dv) like 1.2345 68-4k
+    * gets a properly formatted rut
+    * @param formattedRut 1.2345 68-4k
+    * @returns 12.345.684-K
+*/
 export const decorateRut: (formattedRut: string) => string =
     (formattedRut: string) => {
         const strippedRut = stripRutSpecialCharacters(formattedRut)
@@ -22,11 +27,12 @@ export const decorateRut: (formattedRut: string) => string =
     }
 
 /**
- * takes a number and like "12345678" and returns a formatted number (12.345.678)
+ * Private.
+ * Takes a number and like "12345678" and returns a formatted number (12.345.678)
  * credits to: https://stackoverflow.com/questions/2901102/how-to-format-a-number-with-commas-as-thousands-separators
  * TODO: fix, is a bit slow
  * @param digits 
- * @returns 
+ * @returns  
  */
 const separateNumberStringWithDots: (digits: string) => string =
     (digits: string) =>
@@ -35,6 +41,8 @@ const separateNumberStringWithDots: (digits: string) => string =
 
 /**
  * checks a RUT in the form "182360260"
+ * doesn't checks the dv integrity or the special characters included
+ * used as an intermediate step on the rut text input process
  * @param rutWithDV 
  * @returns errorMessage
  */
@@ -56,8 +64,13 @@ export const checkStructure_rutWithDv: (rutWithDv: string) => string =
         return ""
     }
 
+/**
+    * checks the integrity of the dv in a rut
+* todo: strip special characters
+    *
+    */
 export const checkDV_rutWithDV: (rutWithDV: string) => string = (rutWithDV: string) => {
-
+    //todo: use function
     const numericPart = rutWithDV.slice(0, (rutWithDV.length - 1))
     if (isNaN(Number(numericPart)))
         return "El rut debe ser numerico";
@@ -71,10 +84,40 @@ export const checkDV_rutWithDV: (rutWithDV: string) => string = (rutWithDV: stri
     return "";
 }
 
+/**
+* calculates the dv corresponding to a numeric rut
+* got from the internet. IDK where
+*/
 export const calculate_dv: (rutWithDv: number) => string = (rutWithoutDV: number) => {
     var M = 0, S = 1;
     for (; rutWithoutDV; rutWithoutDV = Math.floor(rutWithoutDV / 10))
         S = (S + rutWithoutDV % 10 * (9 - M++ % 6)) % 11;
     const result = S ? S - 1 : 'K';
     return result.toString()
+}
+
+
+/**
+* gets the numeric part of a rut.
+* @param rutWithDV 12.345.648-k; any non-numeric or "K" character gets ignored
+* @returns 12345648 as number; if error: 0
+*/
+export const extractNumericPart_rutWithDV: (rutWithDV: string) => number = (rutWithDV: string) => {
+    if (!rutWithDV || rutWithDV.length <= 1) {
+        return 0;
+    }
+
+    const cleanRut = stripRutSpecialCharacters(rutWithDV)
+    if (cleanRut.length <= 1) {
+        return 0;
+    }
+
+    const rutWithoutDV=cleanRut.slice(0, (cleanRut.length - 1))
+
+    const numericPart = parseInt(rutWithoutDV)
+    if (isNaN(numericPart)){
+        return 0;
+    }
+
+    return numericPart;
 }
